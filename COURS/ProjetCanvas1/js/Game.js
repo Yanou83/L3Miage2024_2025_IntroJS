@@ -69,7 +69,7 @@ export default class Game {
         requestAnimationFrame(this.mainAnimationLoop.bind(this));
     }
 
-    x = 100;
+    x = 300;
     mainAnimationLoop() {
         // 1 - on efface le canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -161,27 +161,68 @@ export default class Game {
         //this.ctx.scale(0.5, 0.5);
 
         // tete du monstre
-        this.ctx.fillStyle = "pink";
+        this.ctx.fillStyle = "yellow";
         this.ctx.fillRect(0, 0, 100, 100);
+
+        // corps
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(0, 50, 100, 20);
+
         // yeux
-        this.drawCircleImmediat(20, 20, 10, "red");
-        this.drawCircleImmediat(60, 20, 10, "red");
+        this.drawCircleImmediat(30, 20, 15, "white");
+        this.drawCircleImmediat(70, 20, 15, "white");
+        // pupille
+        this.drawCircleImmediat(30, 20, 8, "skyblue");
+        this.drawCircleImmediat(70, 20, 8, "skyblue");
+        //iris
+        this.drawCircleImmediat(30, 20, 5, "black");
+        this.drawCircleImmediat(70, 20, 5, "black");
+
+        // nez
+        this.drawNose();
 
         // Les bras
         this.drawBrasGauche();
+        this.drawBrasDroit();
 
         // restore
+        this.ctx.restore();
+    }
+
+    drawNose() {
+        this.ctx.save();
+    
+        this.ctx.translate(40, 40);
+    
+        // on dessine le nez
+        this.ctx.fillStyle = "yellow";
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, 0);
+        this.ctx.lineTo(30, 0);
+        this.ctx.arc(30, 5, 5, -Math.PI / 2, Math.PI / 2, false); // arc arrondi
+        this.ctx.lineTo(0, 10);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, 0);
+        this.ctx.lineTo(30, 0);
+        this.ctx.arc(30, 5, 5, -Math.PI / 2, Math.PI / 2, false); // arc arrondi
+        this.ctx.lineTo(0, 10);
+        this.ctx.stroke();
+    
         this.ctx.restore();
     }
 
     drawBrasGauche() {
         this.ctx.save();
 
-        this.ctx.translate(-50, 50);
+        this.ctx.translate(-20, 50);
         //this.ctx.rotate(0.7);
 
         // on dessine le bras gauche
-        this.ctx.fillStyle = "purple";
+        this.ctx.fillStyle = "yellow";
         this.ctx.fillRect(-50, 0, 50, 10);
 
         // on dessine l'avant bras gauche
@@ -195,8 +236,35 @@ export default class Game {
 
     this.ctx.translate(0, 0);
 
-        this.ctx.fillStyle = "blue";
-        this.ctx.fillRect(0, 0, 50, 10);
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(0, 0, 20, 10);
+
+        this.ctx.restore();
+    }
+
+    drawBrasDroit() {
+        this.ctx.save();
+
+        this.ctx.translate(100, 50);
+        //this.ctx.rotate(1.57);
+
+        // on dessine le bras droit
+        this.ctx.fillStyle = "yellow";
+        this.ctx.fillRect(20, 0, 50, 10);
+
+        // on dessine l'avant bras droit
+       this.drawAvantBrasDroit();
+
+        this.ctx.restore();
+    }
+
+    drawAvantBrasDroit() {
+        this.ctx.save();
+
+    this.ctx.translate(0, 0);
+
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(0, 0, 20, 10);
 
         this.ctx.restore();
     }
