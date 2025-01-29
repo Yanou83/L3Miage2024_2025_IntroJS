@@ -1,12 +1,26 @@
 export default class Game {
     constructor(canvas) {
         this.canvas = canvas;
+        this.keys = {};
+        this.monsterX = 300;
+        this.monsterY = 100;
     }
 
-   async init(canvas) {
+    async init(canvas) {
         this.ctx = this.canvas.getContext("2d");
 
         console.log("Game initialisé");
+
+        // Load the background image
+        this.backgroundImage = new Image();
+        this.backgroundImage.src = "assets/images/fond_bobleponge.png";
+        await new Promise((resolve) => {
+            this.backgroundImage.onload = resolve;
+        });
+
+        // Add event listeners for keyboard input
+        window.addEventListener("keydown", this.handleKeyDown.bind(this));
+        window.addEventListener("keyup", this.handleKeyUp.bind(this));
     }
 
     start() {
@@ -63,20 +77,23 @@ export default class Game {
         this.ctx.stroke();
 
         // dessine le monstre (le joueur)
-        this.drawMonstre(600, 100);
+        this.drawMonstre(this.monsterX, this.monsterY);
 
         // On démarre une animation à 60 images par seconde
         requestAnimationFrame(this.mainAnimationLoop.bind(this));
     }
 
-    x = 300;
     mainAnimationLoop() {
         // 1 - on efface le canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // Draw the background image
+        this.ctx.drawImage(this.backgroundImage, 0, 0, this.canvas.width, this.canvas.height);
+
         // 2 - on dessine les objets à animer dans le jeu
         // ici on dessine le monstre
-        this.drawMonstre(this.x, 100);
+        this.update();
+        this.drawMonstre(this.monsterX, this.monsterY);
 
         // 3 - On regarde l'état du clavier, manette, souris et on met à jour
         // l'état des objets du jeu en conséquence
@@ -88,10 +105,25 @@ export default class Game {
     }
 
     update() {
-        this.x += 10;
-        if (this.x > this.canvas.width) {
-            this.x = 0;
-        }
+        // Update monster position based on keys pressed
+        if (this.keys["ArrowUp"]) this.monsterY -= 5;
+        if (this.keys["ArrowDown"]) this.monsterY += 5;
+        if (this.keys["ArrowLeft"]) this.monsterX -= 5;
+        if (this.keys["ArrowRight"]) this.monsterX += 5;
+
+        // Ensure the monster stays within the canvas bounds
+        if (this.monsterX < 0) this.monsterX = 0;
+        if (this.monsterX > this.canvas.width - 100) this.monsterX = this.canvas.width - 100;
+        if (this.monsterY < 0) this.monsterY = 0;
+        if (this.monsterY > this.canvas.height - 160) this.monsterY = this.canvas.height - 160; // Adjusted for shoe height
+    }
+
+    handleKeyDown(e) {
+        this.keys[e.key] = true;
+    }
+
+    handleKeyUp(e) {
+        this.keys[e.key] = false;
     }
 
     drawCircleImmediat(x, y, r, color) {
@@ -109,7 +141,7 @@ export default class Game {
 
         // on translate le systeme de coordonnées pour placer le cercle
         // en x, y
-        this.ctx.translate(x, y);     
+        this.ctx.translate(x, y);
         this.ctx.arc(0, 0, r, 0, Math.PI * 2);
         this.ctx.fill();
 
@@ -160,73 +192,256 @@ export default class Game {
         //this.ctx.rotate(0.3);
         //this.ctx.scale(0.5, 0.5);
 
-        // tete du monstre
-        this.ctx.fillStyle = "yellow";
-        this.ctx.fillRect(0, 0, 100, 100);
-
         // corps
-        this.ctx.fillStyle = "white";
-        this.ctx.fillRect(0, 50, 100, 20);
+        this.drawBody();
+
 
         // yeux
-        this.drawCircleImmediat(30, 20, 15, "white");
-        this.drawCircleImmediat(70, 20, 15, "white");
-        // pupille
-        this.drawCircleImmediat(30, 20, 8, "skyblue");
-        this.drawCircleImmediat(70, 20, 8, "skyblue");
-        //iris
-        this.drawCircleImmediat(30, 20, 5, "black");
-        this.drawCircleImmediat(70, 20, 5, "black");
+        this.drawEyes();
 
         // nez
         this.drawNose();
+
+        // sourire
+        this.drawSmile();
 
         // Les bras
         this.drawBrasGauche();
         this.drawBrasDroit();
 
+        // Les jambes
+        this.drawJambeGauche();
+        this.drawJambeDroite();
+
         // restore
         this.ctx.restore();
     }
 
-    drawNose() {
-        this.ctx.save();
-    
-        this.ctx.translate(40, 40);
-    
-        // on dessine le nez
-        this.ctx.fillStyle = "yellow";
-        this.ctx.strokeStyle = "black";
-        this.ctx.lineWidth = 1;
+    // Méthode pour dessiner un cercle
+    drawCircle(x, y, radius) {
         this.ctx.beginPath();
-        this.ctx.moveTo(0, 0);
-        this.ctx.lineTo(30, 0);
-        this.ctx.arc(30, 5, 5, -Math.PI / 2, Math.PI / 2, false); // arc arrondi
-        this.ctx.lineTo(0, 10);
+        this.ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+        this.ctx.fill();
+    }
+
+    drawBody() {
+        // corps
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(0, 90, 100, 12);
+        this.ctx.fillStyle = "#914D03";
+        this.ctx.fillRect(0, 102, 100, 15);
+
+        // ceinture
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(3, 107, 17, 4);
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(27, 107, 17, 4);
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(55, 107, 17, 4);
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(80, 107, 17, 4);
+
+
+        // Dessiner la cravate (losange rouge)
+        this.ctx.fillStyle = "red";
+        this.ctx.beginPath();
+        this.ctx.moveTo(50, 70); // Point supérieur
+        this.ctx.lineTo(55, 90); // Point droit
+        this.ctx.lineTo(50, 110); // Point inférieur
+        this.ctx.lineTo(45, 90); // Point gauche
         this.ctx.closePath();
         this.ctx.fill();
+
+        // tete du monstre
+        this.ctx.fillStyle = "#F0EE0E";
+        this.ctx.fillRect(0, 0, 100, 90);
+
+        // Ajouter quelques cercles noirs de tailles variées à différents endroits
+        this.ctx.fillStyle = "#C2C129";
+        this.drawCircle(6, 25, 5); // Petit cercle
+        this.drawCircle(10, 9, 8); // Cercle moyen
+        this.drawCircle(10, 70, 7); // Cercle moyen
+        this.drawCircle(90, 9, 6); // Cercle moyen
+        this.drawCircle(80, 70, 6); // Petit cercle
+        this.drawCircle(90, 55, 3); // Petit cercle
+
+
+        // Dessiner la cravate (losange rouge)
+        this.ctx.fillStyle = "red";
         this.ctx.beginPath();
-        this.ctx.moveTo(0, 0);
-        this.ctx.lineTo(30, 0);
-        this.ctx.arc(30, 5, 5, -Math.PI / 2, Math.PI / 2, false); // arc arrondi
-        this.ctx.lineTo(0, 10);
-        this.ctx.stroke();
-    
+        this.ctx.moveTo(50, 90); // Point supérieur
+        this.ctx.lineTo(58, 103); // Point droit
+        this.ctx.lineTo(50, 110); // Point inférieur
+        this.ctx.lineTo(42, 103); // Point gauche
+        this.ctx.closePath();
+        this.ctx.fill();
+    }
+
+
+    // Méthode pour dessiner la jambe gauche
+    drawJambeGauche() {
+        this.ctx.save();
+
+        this.ctx.translate(30, 117);
+
+        // la jambe gauche
+        this.ctx.fillStyle = "#F0EE0E";
+        this.ctx.fillRect(0, 0, 5, 30);
+
+        // le pantelon jambe gauche
+        this.ctx.fillStyle = "#914D03";
+        this.ctx.fillRect(-5, 0, 15, 10);
+
+        // la chaussette gauche
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(0, 19, 5, 12);
+
+        // la chaussure gauche
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(-15, 30, 22, 11);
+
         this.ctx.restore();
+    }
+
+    // Méthode pour dessiner la jambe droite
+    drawJambeDroite() {
+        this.ctx.save();
+
+        this.ctx.translate(60, 110);
+
+        // la jambe droite
+        this.ctx.fillStyle = "#F0EE0E";
+        this.ctx.fillRect(5, 7, 5, 30);
+
+        // le pantelon jambe droite
+        this.ctx.fillStyle = "#914D03";
+        this.ctx.fillRect(1, 6, 15, 10);
+
+        // la chaussette jambe droite
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(5, 26, 5, 12);
+
+        // la chaussure droite
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(1.5, 37, 22, 11);
+
+        this.ctx.restore();
+    }
+
+
+    drawEyes() {
+        this.drawCircleImmediat(32, 32, 18, "white");
+        this.drawCircleImmediat(68, 32, 18, "white");
+        // Contours des yeux
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 0.5;
+        this.ctx.beginPath();
+        this.ctx.arc(32, 32, 18, 0, 2 * Math.PI, false);
+        this.ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.arc(68, 32, 18, 0, 2 * Math.PI, false);
+        this.ctx.stroke();
+
+        // pupille
+        this.drawCircleImmediat(32, 32, 8, "skyblue");
+        this.drawCircleImmediat(68, 32, 8, "skyblue");
+        //iris
+        this.drawCircleImmediat(32, 32, 5, "black");
+        this.drawCircleImmediat(68, 32, 5, "black");
+
+
+        // Cils pour l'œil gauche
+        this.ctx.beginPath();
+        this.ctx.moveTo(20, 8);
+        this.ctx.lineTo(24, 15);
+        this.ctx.moveTo(32, 7);
+        this.ctx.lineTo(32, 15);
+        this.ctx.moveTo(44, 8);
+        this.ctx.lineTo(40, 15);
+        this.ctx.stroke();
+
+        // Cils pour l'œil droit
+        this.ctx.beginPath();
+        this.ctx.moveTo(56, 8);
+        this.ctx.lineTo(60, 15);
+        this.ctx.moveTo(68, 7);
+        this.ctx.lineTo(68, 15);
+        this.ctx.moveTo(80, 8);
+        this.ctx.lineTo(76, 15);
+        this.ctx.stroke();
+    }
+
+    drawNose() {
+        this.ctx.save();
+
+        this.ctx.translate(50, 45);
+
+        // on dessine le nez
+        this.ctx.fillStyle = "#F0EE0E";
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 1;
+
+        // Dessiner le cercle plein
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 7, 0, 2 * Math.PI, false); // Cercle complet avec un rayon de 5
+        this.ctx.fill();
+
+        // Dessiner le contour sans la partie basse
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 7, 0, 0.5 * Math.PI, true); // Demi-cercle ouvert en bas avec un rayon de 5
+        this.ctx.stroke();
+
+        this.ctx.restore();
+    }
+
+
+    // Méthode pour dessiner un sourire
+    drawSmile() {
+        // Dessiner les dents
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(33, 64, 13, 10); // Première dent
+        this.ctx.fillRect(53, 64, 13, 10); // Deuxième dent
+
+        // Ajouter un contour noir aux dents sans la partie haute
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 1;
+
+        // Contour de la première dent
+        this.ctx.beginPath();
+        this.ctx.moveTo(33, 62); // Légèrement plus haut
+        this.ctx.lineTo(33, 75);
+        this.ctx.lineTo(46, 75);
+        this.ctx.lineTo(46, 64); // Légèrement plus haut
+        this.ctx.stroke();
+
+        // Contour de la deuxième dent
+        this.ctx.beginPath();
+        this.ctx.moveTo(53, 64); // Légèrement plus haut
+        this.ctx.lineTo(53, 75);
+        this.ctx.lineTo(66, 75);
+        this.ctx.lineTo(66, 63); // Légèrement plus haut
+        this.ctx.stroke();
+
+        // Dessiner le sourire
+        this.ctx.beginPath();
+        this.ctx.arc(50, 25, 40, Math.PI * 0.2, Math.PI * 0.8, false); // Bouche moins grande et moins incurvée
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
     }
 
     drawBrasGauche() {
         this.ctx.save();
 
-        this.ctx.translate(-20, 50);
-        //this.ctx.rotate(0.7);
+        this.ctx.translate(-11.5, 90);
+        this.ctx.rotate(-1.5);
 
         // on dessine le bras gauche
-        this.ctx.fillStyle = "yellow";
-        this.ctx.fillRect(-50, 0, 50, 10);
+        this.ctx.fillStyle = "#F0EE0E";
+        this.ctx.fillRect(-40, 2, 40, 5);
 
         // on dessine l'avant bras gauche
-       this.drawAvantBrasGauche();
+        this.drawAvantBrasGauche();
 
         this.ctx.restore();
     }
@@ -234,10 +449,10 @@ export default class Game {
     drawAvantBrasGauche() {
         this.ctx.save();
 
-    this.ctx.translate(0, 0);
+        this.ctx.translate(0, 0);
 
         this.ctx.fillStyle = "white";
-        this.ctx.fillRect(0, 0, 20, 10);
+        this.ctx.fillRect(0, 0, 15, 10);
 
         this.ctx.restore();
     }
@@ -245,15 +460,15 @@ export default class Game {
     drawBrasDroit() {
         this.ctx.save();
 
-        this.ctx.translate(100, 50);
-        //this.ctx.rotate(1.57);
+        this.ctx.translate(110, 70);
+        this.ctx.rotate(1.5);
 
         // on dessine le bras droit
-        this.ctx.fillStyle = "yellow";
-        this.ctx.fillRect(20, 0, 50, 10);
+        this.ctx.fillStyle = "#F0EE0E";
+        this.ctx.fillRect(20, 2, 40, 5);
 
         // on dessine l'avant bras droit
-       this.drawAvantBrasDroit();
+        this.drawAvantBrasDroit();
 
         this.ctx.restore();
     }
@@ -261,10 +476,10 @@ export default class Game {
     drawAvantBrasDroit() {
         this.ctx.save();
 
-    this.ctx.translate(0, 0);
+        this.ctx.translate(0, 0);
 
         this.ctx.fillStyle = "white";
-        this.ctx.fillRect(0, 0, 20, 10);
+        this.ctx.fillRect(5, 0, 15, 10);
 
         this.ctx.restore();
     }
