@@ -1,12 +1,12 @@
 {
     "obstacles": [
         { "x": 200, "y": 0, "count": 15, "orientation": "vertical" },
-        { "x": 400, "y": 500, "count": 12, "orientation": "horizontal" },
-        { "x": 700, "y": 100, "count": 14, "orientation": "vertical" }
+        { "x": 400, "y": 500, "count": 3, "orientation": "horizontal" },
+        { "x": 700, "y": 20, "count": 5, "orientation": "vertical" }
     ],
     "objectif": {
-        "x": 720,
-        "y": 535,
+        "x": 780,
+        "y": 630,
         "w": 40,
         "h": 40,
         "color": "gold"

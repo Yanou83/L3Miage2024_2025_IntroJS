@@ -54,14 +54,23 @@ export default class Game {
             }
         });
 
+
         // Ajouter l'objectif
         const objectifImage = new Image();
         objectifImage.src = 'assets/images/ananas.png';
         await new Promise(resolve => objectifImage.onload = resolve);
 
         const objectifData = levelData.objectif;
-        this.objectif = new Objectif(objectifData.x, objectifData.y, objectifData.w, objectifData.h, objectifImage, objectifData.w * 2.8, objectifData.h * 2.8);
+
+        // Ajustement du centrage
+        const newWidth = objectifData.w * 2.8;
+        const newHeight = objectifData.h * 2.8;
+        const adjustedX = objectifData.x + (objectifData.w - newWidth) / 2;
+        const adjustedY = objectifData.y + (objectifData.h - newHeight) / 2;
+
+        this.objectif = new Objectif(adjustedX, adjustedY, objectifData.w, objectifData.h, objectifImage, newWidth, newHeight);
         this.objetsGraphiques.push(this.objectif);
+
     }
 
     start() {
@@ -98,7 +107,7 @@ export default class Game {
     update() {
         // Appelée par mainAnimationLoop
         // donc tous les 1/60 de seconde
-        
+
         // Déplacement du joueur. 
         if (!this.gameWon) {
             this.movePlayer();
@@ -117,21 +126,21 @@ export default class Game {
     movePlayer() {
         this.player.vitesseX = 0;
         this.player.vitesseY = 0;
-        
-        if(this.inputStates.ArrowRight) {
+
+        if (this.inputStates.ArrowRight) {
             this.player.vitesseX = 3;
-        } 
-        if(this.inputStates.ArrowLeft) {
+        }
+        if (this.inputStates.ArrowLeft) {
             this.player.vitesseX = -3;
-        } 
+        }
 
-        if(this.inputStates.ArrowUp) {
+        if (this.inputStates.ArrowUp) {
             this.player.vitesseY = -3;
-        } 
+        }
 
-        if(this.inputStates.ArrowDown) {
+        if (this.inputStates.ArrowDown) {
             this.player.vitesseY = 3;
-        } 
+        }
 
         this.player.move();
 
@@ -144,58 +153,80 @@ export default class Game {
 
         // Teste collision avec les obstacles
         this.testCollisionPlayerObstacles();
-       
+
     }
 
     testCollisionPlayerBordsEcran() {
         // Raoppel : le x, y du joueur est en son centre, pas dans le coin en haut à gauche!
-        if(this.player.x - this.player.w/2 < 0) {
+        if (this.player.x - this.player.w / 2 < 0) {
             // On stoppe le joueur
             this.player.vitesseX = 0;
             // on le remet au point de contaxct
-            this.player.x = this.player.w/2;
+            this.player.x = this.player.w / 2;
         }
-        if(this.player.x + this.player.w/2 > this.canvas.width) {
+        if (this.player.x + this.player.w / 2 > this.canvas.width) {
             this.player.vitesseX = 0;
             // on le remet au point de contact
-            this.player.x = this.canvas.width - this.player.w/2;
+            this.player.x = this.canvas.width - this.player.w / 2;
         }
 
-        if(this.player.y - this.player.h/2 < 0) {
-            this.player.y = this.player.h/2;
+        if (this.player.y - this.player.h / 2 < 0) {
+            this.player.y = this.player.h / 2;
             this.player.vitesseY = 0;
 
         }
-       
-        if(this.player.y + this.player.h/2 > this.canvas.height) {
+
+        if (this.player.y + this.player.h / 2 > this.canvas.height) {
             this.player.vitesseY = 0;
-            this.player.y = this.canvas.height - this.player.h/2;
+            this.player.y = this.canvas.height - this.player.h / 2;
         }
     }
 
     testCollisionPlayerObstacles() {
         this.objetsGraphiques.forEach(obj => {
-            if(obj instanceof Obstacle) {
-                if(rectsOverlap(this.player.x-this.player.w/2, this.player.y - this.player.h/2, this.player.w, this.player.h, obj.x, obj.y, obj.w, obj.h)) {
-                    // collision
-
-                    // ICI TEST BASIQUE QUI ARRETE LE JOUEUR EN CAS DE COLLIION.
-                    // SI ON VOULAIT FAIRE MIEUX, ON POURRAIT PAR EXEMPLE REGARDER OU EST LE JOUEUR
-                    // PAR RAPPORT A L'obstacle courant : il est à droite si son x est plus grand que le x de l'obstacle + la largeur de l'obstacle
-                    // il est à gauche si son x + sa largeur est plus petit que le x de l'obstacle
-                    // etc.
-                    // Dans ce cas on pourrait savoir comment le joueur est entré en collision avec l'obstacle et réagir en conséquence
-                    // par exemple en le repoussant dans la direction opposée à celle de l'obstacle...
-                    // Là par défaut on le renvoie en x=10 y=10 et on l'arrête
+            if (obj instanceof Obstacle) {
+                if (rectsOverlap(
+                    this.player.x - this.player.w / 2, this.player.y - this.player.h / 2, this.player.w, this.player.h,
+                    obj.x, obj.y, obj.w, obj.h
+                )) {
                     console.log("Collision avec obstacle");
-                    this.player.x = 10;
-                    this.player.y = 10;
-                    this.player.vitesseX = 0;
-                    this.player.vitesseY = 0;
+
+                    let playerLeft = this.player.x - this.player.w / 2;
+                    let playerRight = this.player.x + this.player.w / 2;
+                    let playerTop = this.player.y - this.player.h / 2;
+                    let playerBottom = this.player.y + this.player.h / 2;
+
+                    let objLeft = obj.x;
+                    let objRight = obj.x + obj.w;
+                    let objTop = obj.y;
+                    let objBottom = obj.y + obj.h;
+
+                    let overlapX = Math.min(playerRight, objRight) - Math.max(playerLeft, objLeft);
+                    let overlapY = Math.min(playerBottom, objBottom) - Math.max(playerTop, objTop);
+
+                    // Si chevauchement plus important sur X, on bloque le mouvement horizontal
+                    if (overlapX < overlapY) {
+                        if (this.player.x < obj.x) {
+                            this.player.x = objLeft - this.player.w / 2; // Ajuster le joueur à gauche
+                        } else {
+                            this.player.x = objRight + this.player.w / 2; // Ajuster le joueur à droite
+                        }
+                        this.player.vitesseX = 0; // Stopper le déplacement horizontal
+                    }
+                    // Sinon, on bloque le mouvement vertical
+                    else {
+                        if (this.player.y < obj.y) {
+                            this.player.y = objTop - this.player.h / 2; // Ajuster le joueur au-dessus
+                        } else {
+                            this.player.y = objBottom + this.player.h / 2; // Ajuster le joueur en dessous
+                        }
+                        this.player.vitesseY = 0; // Stopper le déplacement vertical
+                    }
                 }
             }
         });
     }
+
 
     checkVictory() {
         if (rectsOverlap(this.player.x - this.player.w / 2, this.player.y - this.player.h / 2, this.player.w, this.player.h, this.objectif.x, this.objectif.y, this.objectif.w, this.objectif.h)) {
@@ -209,20 +240,49 @@ export default class Game {
     showVictoryPopup() {
         const popup = document.createElement('div');
         popup.className = 'victory-popup';
-        popup.innerHTML = 'Félicitations ! Tu as remporté le niveau 1<br><button id="next-level-btn">Aller au niveau 2</button>';
+        popup.innerHTML = '<p>Félicitations ! Tu as remporté le niveau 1</p><p>Passage au niveau 2 dans <span id="countdown">5</span> secondes...</p>';
         document.body.appendChild(popup);
-
-        document.getElementById('next-level-btn').addEventListener('click', () => {
-            popup.remove();
-            this.loadNextLevel();
-        });
+    
+        let countdown = 5; // Durée du chrono
+        const countdownElement = document.getElementById('countdown');
+    
+        const interval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown === 0) {
+                clearInterval(interval);
+                popup.remove(); // Supprime le popup
+                this.loadNextLevel(); // Charge le niveau 2
+            }
+        }, 1000); // Mise à jour toutes les 1 seconde
     }
+    
+    
+    
 
     async loadNextLevel() {
+        // Nettoyer la liste des objets graphiques
         this.objetsGraphiques = [];
+    
+        // Réinitialiser l'état du jeu
         this.gameWon = false;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas
-        await this.init('niveau/niveau2.json');
+    
+        // Effacer le canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+        // Recharger le niveau avec les nouvelles configurations
+        await this.loadLevel('niveau/niveau2.json');
+    
+        // Ajouter à nouveau le joueur et l'objet souris
+        this.player = new Player(100, 100);
+        this.objetsGraphiques.push(this.player);
+    
+        this.objetSouris = new ObjetSouris(200, 200, 25, 25, "transparent");
+        this.objetsGraphiques.push(this.objetSouris);
+    
+        // Redémarrer la boucle d'animation
         this.start();
     }
+    
 }

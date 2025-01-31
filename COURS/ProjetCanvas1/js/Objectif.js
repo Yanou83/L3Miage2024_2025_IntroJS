@@ -10,10 +10,13 @@ export default class Objectif extends ObjectGraphique {
 
     draw(ctx) {
         if (this.image instanceof Image) {
-            ctx.drawImage(this.image, this.x, this.y, this.imageW, this.imageH);
+            const offsetX = (this.imageW - this.w) / 2;
+            const offsetY = (this.imageH - this.h) / 2;
+            
+            ctx.drawImage(this.image, this.x - offsetX, this.y - offsetY, this.imageW, this.imageH);
         } else {
             ctx.fillStyle = this.image;
             ctx.fillRect(this.x, this.y, this.imageW, this.imageH);
         }
-    }
+    }    
 }
