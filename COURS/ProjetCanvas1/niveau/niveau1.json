@@ -1,0 +1,14 @@
+{
+    "obstacles": [
+        { "x": 200, "y": 0, "count": 15, "orientation": "vertical" },
+        { "x": 400, "y": 500, "count": 12, "orientation": "horizontal" },
+        { "x": 700, "y": 100, "count": 14, "orientation": "vertical" }
+    ],
+    "objectif": {
+        "x": 720,
+        "y": 535,
+        "w": 40,
+        "h": 40,
+        "color": "gold"
+    }
+}
