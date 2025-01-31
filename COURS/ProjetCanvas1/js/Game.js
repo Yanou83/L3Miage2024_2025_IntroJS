@@ -8,36 +8,79 @@ import { initListeners } from "./ecouteurs.js";
 export default class Game {
     objetsGraphiques = [];
     gameWon = false;
+    niveau = 1; // Variable pour suivre le niveau actuel
 
     constructor(canvas) {
         this.canvas = canvas;
-        // etat du clavier
         this.inputStates = {
             mouseX: 0,
             mouseY: 0,
         };
+
+        // Récupérer le niveau maximum atteint depuis le stockage local
+        const savedLevel = localStorage.getItem("highestLevel");
+        if (savedLevel) {
+            this.niveau = parseInt(savedLevel); // Charger le niveau sauvegardé
+        }
+
+        // Récupérer le niveau actuel depuis le cookie
+        const currentLevel = localStorage.getItem("currentLevel");
+        if (currentLevel) {
+            this.niveau = parseInt(currentLevel); // Charger le niveau actuel
+        }
     }
 
-    async init(level = 'niveau/niveau1.json') {
-        this.ctx = this.canvas.getContext("2d");
+    async startGame() {
+        console.log(`Lancement du niveau ${this.niveau}`);
 
+        localStorage.setItem("currentLevel", this.niveau);
+
+        // Désactiver les boutons de niveau si on est au premier ou dernier niveau
+        const highestLevel = parseInt(localStorage.getItem("highestLevel")) || 1;
+        const currentLevel = parseInt(localStorage.getItem("currentLevel")) || 1;
+        const prevLevelButton = document.querySelector("#prevLevel");
+        const nextLevelButton = document.querySelector("#nextLevel");
+        if (highestLevel <= currentLevel) {
+            nextLevelButton.disabled = true;
+        } else {
+            nextLevelButton.disabled = false;
+        }
+        if (currentLevel == 1) {
+            prevLevelButton.disabled = true;
+        }
+        else {
+            prevLevelButton.disabled = false;
+        }
+
+        // Réinitialisation complète pour éviter les doublons
+        this.objetsGraphiques = [];
+        this.gameWon = false; // Remettre à zéro la victoire
+
+        // Effacement du canvas
+        this.ctx = this.canvas.getContext("2d");
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Charger le bon niveau
+        await this.loadLevel(`niveau/niveau${this.niveau}.json`);
+
+        // Recharger le joueur et l'objet souris
         this.player = new Player(100, 100);
         this.objetsGraphiques.push(this.player);
 
-        // Un objert qui suite la souris, juste pour tester
         this.objetSouris = new ObjetSouris(200, 200, 25, 25, "transparent");
         this.objetsGraphiques.push(this.objetSouris);
 
-        // Charger les obstacles et l'objectif depuis un fichier JSON
-        await this.loadLevel(level);
-
-        // On initialise les écouteurs de touches, souris, etc.
+        // Réinitialisation des événements d'entrée utilisateur
         initListeners(this.inputStates, this.canvas);
 
-        console.log("Game initialisé");
+        // Relancer l'animation
+        this.start();
     }
 
+
+
     async loadLevel(levelPath) {
+        console.log(`Chargement du fichier JSON: ${levelPath}`);
         const response = await fetch(levelPath);
         const levelData = await response.json();
 
@@ -54,23 +97,14 @@ export default class Game {
             }
         });
 
-
         // Ajouter l'objectif
         const objectifImage = new Image();
         objectifImage.src = 'assets/images/ananas.png';
         await new Promise(resolve => objectifImage.onload = resolve);
 
         const objectifData = levelData.objectif;
-
-        // Ajustement du centrage
-        const newWidth = objectifData.w * 2.8;
-        const newHeight = objectifData.h * 2.8;
-        const adjustedX = objectifData.x + (objectifData.w - newWidth) / 2;
-        const adjustedY = objectifData.y + (objectifData.h - newHeight) / 2;
-
-        this.objectif = new Objectif(adjustedX, adjustedY, objectifData.w, objectifData.h, objectifImage, newWidth, newHeight);
+        this.objectif = new Objectif(objectifData.x, objectifData.y, objectifData.w, objectifData.h, objectifImage, objectifData.w * 2.8, objectifData.h * 2.8);
         this.objetsGraphiques.push(this.objectif);
-
     }
 
     start() {
@@ -229,60 +263,82 @@ export default class Game {
 
 
     checkVictory() {
+        if (this.gameWon) return;
+
         if (rectsOverlap(this.player.x - this.player.w / 2, this.player.y - this.player.h / 2, this.player.w, this.player.h, this.objectif.x, this.objectif.y, this.objectif.w, this.objectif.h)) {
-            this.showVictoryPopup();
+            this.gameWon = true; // Marquer la victoire pour éviter d'appeler plusieurs fois le popup
             this.player.vitesseX = 0;
             this.player.vitesseY = 0;
-            this.gameWon = true;
+            this.showVictoryPopup();
         }
     }
+
 
     showVictoryPopup() {
         const popup = document.createElement('div');
         popup.className = 'victory-popup';
-        popup.innerHTML = '<p>Félicitations ! Tu as remporté le niveau 1</p><p>Passage au niveau 2 dans <span id="countdown">5</span> secondes...</p>';
+        popup.innerHTML = `<p>Félicitations ! Tu as terminé le niveau ${this.niveau}</p>
+                           <p>Passage au niveau ${this.niveau + 1} dans <span id="countdown">5</span> secondes...</p>`;
         document.body.appendChild(popup);
-    
-        let countdown = 5; // Durée du chrono
+
+        let countdown = 5;
         const countdownElement = document.getElementById('countdown');
-    
+
         const interval = setInterval(() => {
             countdown--;
             countdownElement.textContent = countdown;
-            
+
             if (countdown === 0) {
                 clearInterval(interval);
                 popup.remove(); // Supprime le popup
-                this.loadNextLevel(); // Charge le niveau 2
+
+                // Passer au niveau suivant
+                this.niveau++;
+
+                // Sauvegarder le niveau maximum atteint
+                localStorage.setItem("highestLevel", this.niveau);
+                localStorage.setItem("currentLevel", this.niveau); 
+
+                setTimeout(() => {
+                    this.startGame(); // Relancer le jeu avec le nouveau niveau
+                }, 100);
             }
-        }, 1000); // Mise à jour toutes les 1 seconde
+        }, 1000);
     }
-    
-    
-    
+
 
     async loadNextLevel() {
         // Nettoyer la liste des objets graphiques
         this.objetsGraphiques = [];
-    
+
         // Réinitialiser l'état du jeu
         this.gameWon = false;
-    
+
         // Effacer le canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
+
         // Recharger le niveau avec les nouvelles configurations
         await this.loadLevel('niveau/niveau2.json');
-    
+
+
         // Ajouter à nouveau le joueur et l'objet souris
         this.player = new Player(100, 100);
         this.objetsGraphiques.push(this.player);
-    
+
         this.objetSouris = new ObjetSouris(200, 200, 25, 25, "transparent");
         this.objetsGraphiques.push(this.objetSouris);
-    
+
         // Redémarrer la boucle d'animation
         this.start();
     }
-    
+
+    async changeLevel(direction) {
+        this.niveau += direction;
+        if (this.niveau < 1) this.niveau = 1; // Prevent going below level 1
+        const highestLevel = parseInt(localStorage.getItem("highestLevel")) || 1;
+        if (this.niveau > highestLevel) this.niveau = highestLevel; // Prevent going above highest level
+        localStorage.setItem("currentLevel", this.niveau); // Set current level
+        await this.startGame();
+    }
+
 }
