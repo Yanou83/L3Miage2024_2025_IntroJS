@@ -1,4 +1,6 @@
 import Player from "./Player.js";
+import Ennemi from "./Ennemi.js";  // Importer la classe Ennemi
+
 import Obstacle from "./Obstacle.js";
 import ObjetSouris from "./ObjetSouris.js";
 import Objectif from "./Objectif.js";
@@ -65,16 +67,24 @@ export default class Game {
 
         // Recharger le joueur et l'objet souris
         this.player = new Player(100, 100);
+        this.player.vitesseX = 0;
+        this.player.vitesseY = 0;
         this.objetsGraphiques.push(this.player);
 
         this.objetSouris = new ObjetSouris(200, 200, 25, 25, "transparent");
         this.objetsGraphiques.push(this.objetSouris);
 
         // Réinitialisation des événements d'entrée utilisateur
-        initListeners(this.inputStates, this.canvas);
+        if (!this.listenersInitialized) {
+            initListeners(this.inputStates, this.canvas);
+            this.listenersInitialized = true;
+        }
 
         // Relancer l'animation
-        this.start();
+        if (!this.animationRunning) {
+            this.animationRunning = true;
+            this.start();
+        }
     }
 
 
@@ -105,10 +115,24 @@ export default class Game {
         const objectifData = levelData.objectif;
         this.objectif = new Objectif(objectifData.x, objectifData.y, objectifData.w, objectifData.h, objectifImage, objectifData.w * 2.8, objectifData.h * 2.8);
         this.objetsGraphiques.push(this.objectif);
+
+        // Ajouter les ennemis
+        if (levelData.ennemis) {
+            levelData.ennemis.forEach(ennemiData => {
+                let ennemi = new Ennemi(ennemiData.x, ennemiData.y, ennemiData.w, ennemiData.h);
+                this.objetsGraphiques.push(ennemi);
+            });
+        }
     }
 
     start() {
+        this.gameWon = false;
         console.log("Game démarré");
+
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
 
         // On démarre une animation à 60 images par seconde
         requestAnimationFrame(this.mainAnimationLoop.bind(this));
@@ -139,6 +163,8 @@ export default class Game {
     }
 
     update() {
+
+        if (!this.player || !this.objetSouris) return;
         // Appelée par mainAnimationLoop
         // donc tous les 1/60 de seconde
 
@@ -153,33 +179,37 @@ export default class Game {
         this.objetSouris.x = this.inputStates.mouseX;
         this.objetSouris.y = this.inputStates.mouseY;
 
+        this.checkPlayerSpeed();
         // On regarde si le joueur a atteint la sortie
         this.checkVictory();
     }
 
-    movePlayer() {
+    async movePlayer() {
+        // Attendre que `this.player` soit défini avant de continuer
+        while (!this.player) {
+            await new Promise(resolve => setTimeout(resolve, 10)); // Attente de 10ms
+        }
+
         this.player.vitesseX = 0;
         this.player.vitesseY = 0;
 
         if (this.inputStates.ArrowRight) {
-            this.player.vitesseX = 3;
+            this.player.vitesseX = 3; // Toujours 3, pas d'accumulation
         }
         if (this.inputStates.ArrowLeft) {
             this.player.vitesseX = -3;
         }
-
         if (this.inputStates.ArrowUp) {
             this.player.vitesseY = -3;
         }
-
         if (this.inputStates.ArrowDown) {
             this.player.vitesseY = 3;
         }
 
         this.player.move();
-
         this.testCollisionsPlayer();
     }
+
 
     testCollisionsPlayer() {
         // Teste collision avec les bords du canvas
@@ -187,6 +217,9 @@ export default class Game {
 
         // Teste collision avec les obstacles
         this.testCollisionPlayerObstacles();
+
+        // Teste collision avec les ennemis
+        this.testCollisionPlayerEnnemis();
 
     }
 
@@ -262,6 +295,66 @@ export default class Game {
     }
 
 
+    testCollisionPlayerEnnemis() {
+        this.objetsGraphiques.forEach(obj => {
+            if (obj instanceof Ennemi) {
+                if (rectsOverlap(
+                    this.player.x - this.player.w / 2, this.player.y - this.player.h / 2, this.player.w, this.player.h,
+                    obj.x, obj.y, obj.w, obj.h
+                )) {
+                    console.log("Collision avec un ennemi ! Retour au niveau 1...");
+                    this.restartToLevel1();
+                }
+            }
+        });
+    }
+
+    removeEventListeners() {
+        this.canvas.replaceWith(this.canvas.cloneNode(true)); // Clone le canvas pour supprimer les anciens écouteurs
+        this.canvas = document.querySelector("canvas"); // Récupérer le nouveau canvas
+
+        this.inputStates = { mouseX: 0, mouseY: 0 }; // Réinitialiser les états d'entrée
+        this.listenersInitialized = false; // Marquer les écouteurs comme non initialisés
+    }
+
+
+
+    restartToLevel1() {
+        this.niveau = 1; // Revenir au niveau 1
+        localStorage.setItem("currentLevel", this.niveau);
+        console.log("Le joueur revient au niveau 1 !");
+
+        this.startGame(); // Relancer le niveau 1
+    }
+
+    resetGameComplet() {
+        console.log("Réinitialisation complète du jeu sans recharger la page");
+
+        // Supprimer la boucle d’animation en cours
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+        }
+
+        // Supprimer tous les objets du jeu
+        this.objetsGraphiques = [];
+        this.player = null;
+        this.objetSouris = null;
+        this.objectif = null;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Supprimer les écouteurs d'événements pour éviter les doublons
+        this.removeEventListeners();
+
+        this.gameWon = false; // Réinitialiser l'état de victoire
+
+        // Relancer le jeu avec le niveau actuel
+        this.startGame();
+    }
+
+
+
+
+
     checkVictory() {
         if (this.gameWon) return;
 
@@ -272,6 +365,22 @@ export default class Game {
             this.showVictoryPopup();
         }
     }
+
+
+    checkPlayerSpeed() {
+        const maxSpeed = 3; // Vitesse maximale autorisée
+
+        if (Math.abs(this.player.vitesseX) > maxSpeed) {
+            console.warn(`VitesseX anormale détectée: ${this.player.vitesseX}, correction en cours...`);
+            this.player.vitesseX = Math.sign(this.player.vitesseX) * maxSpeed; // Corrige la vitesse
+        }
+
+        if (Math.abs(this.player.vitesseY) > maxSpeed) {
+            console.warn(`VitesseY anormale détectée: ${this.player.vitesseY}, correction en cours...`);
+            this.player.vitesseY = Math.sign(this.player.vitesseY) * maxSpeed; // Corrige la vitesse
+        }
+    }
+
 
 
     showVictoryPopup() {
@@ -297,7 +406,7 @@ export default class Game {
 
                 // Sauvegarder le niveau maximum atteint
                 localStorage.setItem("highestLevel", this.niveau);
-                localStorage.setItem("currentLevel", this.niveau); 
+                localStorage.setItem("currentLevel", this.niveau);
 
                 setTimeout(() => {
                     this.startGame(); // Relancer le jeu avec le nouveau niveau
@@ -333,12 +442,22 @@ export default class Game {
     }
 
     async changeLevel(direction) {
+        this.stopAnimation();
         this.niveau += direction;
         if (this.niveau < 1) this.niveau = 1; // Prevent going below level 1
         const highestLevel = parseInt(localStorage.getItem("highestLevel")) || 1;
         if (this.niveau > highestLevel) this.niveau = highestLevel; // Prevent going above highest level
         localStorage.setItem("currentLevel", this.niveau); // Set current level
-        await this.startGame();
+
+        this.resetGameComplet();
     }
+
+    stopAnimation() {
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+    }
+
 
 }

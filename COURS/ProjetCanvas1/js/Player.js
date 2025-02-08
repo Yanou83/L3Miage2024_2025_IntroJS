@@ -1,12 +1,17 @@
 import ObjectGraphique from "./ObjectGraphique.js";
-import { drawCircleImmediat } from "./utils.js";   
+import { drawCircleImmediat } from "./utils.js";
 
 export default class Player extends ObjectGraphique {
     constructor(x, y) {
-        super(x, y, 60, 95); 
+        super(x, y, 60, 95);
         this.vitesseX = 0;
         this.vitesseY = 0;
         this.angle = 0;
+        this.scaleFactor = 0.7;
+
+        // Adapter la hitbox à la nouvelle taille
+        this.w *= 0.75;
+        this.h *= 0.75;
     }
 
     draw(ctx) {
@@ -18,6 +23,7 @@ export default class Player extends ObjectGraphique {
         // dans cette fonction seront par rapport à ce repère
         // translaté
         ctx.translate(this.x, this.y);
+        ctx.scale(this.scaleFactor, this.scaleFactor);
         ctx.rotate(this.angle);
         // on recentre le monstre. Par défaut le centre de rotation est dans le coin en haut à gauche
         // du rectangle, on décale de la demi largeur et de la demi hauteur pour 
@@ -220,7 +226,7 @@ export default class Player extends ObjectGraphique {
 
         // Dessiner le contour 
         ctx.beginPath();
-        ctx.arc(0, 0, 4.2, 0, 0.5 * Math.PI, true); 
+        ctx.arc(0, 0, 4.2, 0, 0.5 * Math.PI, true);
         ctx.stroke();
 
         ctx.restore();
@@ -239,10 +245,10 @@ export default class Player extends ObjectGraphique {
 
         // Contour de la première dent
         ctx.beginPath();
-        ctx.moveTo(19.8, 37.2); 
+        ctx.moveTo(19.8, 37.2);
         ctx.lineTo(19.8, 45);
         ctx.lineTo(27.6, 45);
-        ctx.lineTo(27.6, 38.4); 
+        ctx.lineTo(27.6, 38.4);
         ctx.stroke();
 
         // Contour de la deuxième dent
@@ -250,12 +256,12 @@ export default class Player extends ObjectGraphique {
         ctx.moveTo(31.8, 38.4);
         ctx.lineTo(31.8, 45);
         ctx.lineTo(39.6, 45);
-        ctx.lineTo(39.6, 37.8); 
+        ctx.lineTo(39.6, 37.8);
         ctx.stroke();
 
         // Dessiner le sourire
         ctx.beginPath();
-        ctx.arc(30, 15, 24, Math.PI * 0.2, Math.PI * 0.8, false); 
+        ctx.arc(30, 15, 24, Math.PI * 0.2, Math.PI * 0.8, false);
         ctx.strokeStyle = "black";
         ctx.lineWidth = 2;
         ctx.stroke();
