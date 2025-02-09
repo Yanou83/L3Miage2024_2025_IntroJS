@@ -12,6 +12,12 @@ Le jeu inclut :
 
 ---
 
+### 🎮 Jouer en ligne
+Tu peux jouer directement à Plankton Escape via **GitHub Pages** :
+[**Jouer maintenant**](https://yanou83.github.io/TPWebJS_L3Miage/COURS/ProjetCanvas1/)
+
+---
+
 ### 🚀 Installation
 1. **Clone** le projet :
    ```bash
