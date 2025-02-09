@@ -79,10 +79,3 @@ Le jeu inclut :
 ✅ **Effets sonores** lors des collisions et victoires.  
 
 ---
-
-### 📜 Licence
-Ce projet est sous licence **MIT** – Tu peux l'utiliser et le modifier librement.
-
----
-
-Si ce projet t'intéresse, **n'hésite pas à donner une ⭐ sur GitHub** et à contribuer !
