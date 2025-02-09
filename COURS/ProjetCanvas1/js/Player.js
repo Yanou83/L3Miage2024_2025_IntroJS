@@ -3,7 +3,7 @@ import { drawCircleImmediat } from "./utils.js";
 
 export default class Player extends ObjectGraphique {
     constructor(x, y) {
-        super(x, y, 60, 95); 
+        super(x, y, 36, 57); // Slightly increased dimensions
         this.vitesseX = 0;
         this.vitesseY = 0;
         this.angle = 0;
@@ -64,163 +64,130 @@ export default class Player extends ObjectGraphique {
     drawBody(ctx) {
         // corps
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 54, 60, 7);
+        ctx.fillRect(0, 32, 36, 4.2);
         ctx.fillStyle = "#914D03";
-        ctx.fillRect(0, 61, 60, 10);
+        ctx.fillRect(0, 36.6, 36, 6);
 
         // ceinture
         ctx.fillStyle = "black";
-        ctx.fillRect(1.8, 64, 10.2, 2.5);
-        ctx.fillStyle = "black";
-        ctx.fillRect(16.2, 64, 10.2, 2.5);
-        ctx.fillStyle = "black";
-        ctx.fillRect(33, 64, 10.2, 2.5);
-        ctx.fillStyle = "black";
-        ctx.fillRect(48, 64, 10.2, 2.5);
+        ctx.fillRect(1.08, 38.4, 6.12, 1.5);
+        ctx.fillRect(9.72, 38.4, 6.12, 1.5);
+        ctx.fillRect(19.8, 38.4, 6.12, 1.5);
+        ctx.fillRect(28.8, 38.4, 6.12, 1.5);
 
         // Dessiner la cravate (losange rouge)
         ctx.fillStyle = "red";
         ctx.beginPath();
-        ctx.moveTo(30, 42); // Point supérieur
-        ctx.lineTo(33, 54); // Point droit
-        ctx.lineTo(30, 66); // Point inférieur
-        ctx.lineTo(27, 54); // Point gauche
+        ctx.moveTo(18, 25.2); // Point supérieur
+        ctx.lineTo(19.8, 32.4); // Point droit
+        ctx.lineTo(18, 39.6); // Point inférieur
+        ctx.lineTo(16.2, 32.4); // Point gauche
         ctx.closePath();
         ctx.fill();
 
         // tete du monstre
         ctx.fillStyle = "#F0EE0E";
-        ctx.fillRect(0, 0, 60, 54);
+        ctx.fillRect(0, 0, 36, 32);
 
         // Ajouter trous de l'éponge tailles variées à différents endroits
         ctx.fillStyle = "#C2C129";
-        this.drawCircle(ctx, 3.6, 15, 3); // Petit cercle
-        this.drawCircle(ctx, 6, 5.4, 4.8); // Cercle moyen
-        this.drawCircle(ctx, 6, 42, 4.2); // Cercle moyen
-        this.drawCircle(ctx, 54, 5.4, 3.6); // Cercle moyen
-        this.drawCircle(ctx, 48, 42, 3.6); // Petit cercle
-        this.drawCircle(ctx, 54, 33, 1.8); // Petit cercle
-
-        // Dessiner la cravate (losange rouge)
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.moveTo(30, 54); // Point supérieur
-        ctx.lineTo(34.8, 61.8); // Point droit
-        ctx.lineTo(30, 66); // Point inférieur
-        ctx.lineTo(25.2, 61.8); // Point gauche
-        ctx.closePath();
-        ctx.fill();
+        this.drawCircle(ctx, 2.16, 9, 1.8); // Petit cercle
+        this.drawCircle(ctx, 3.6, 3.24, 2.88); // Cercle moyen
+        this.drawCircle(ctx, 3.6, 25.2, 2.52); // Cercle moyen
+        this.drawCircle(ctx, 32.4, 3.24, 2.16); // Cercle moyen
+        this.drawCircle(ctx, 28.8, 25.2, 2.16); // Petit cercle
+        this.drawCircle(ctx, 32.4, 19.8, 1.08); // Petit cercle
     }
 
     // Méthode pour dessiner la jambe gauche
     drawJambeGauche(ctx) {
         ctx.save();
-
-        ctx.translate(18, 70);
-
-        // la jambe gauche
+        ctx.translate(10.8, 42);
         ctx.fillStyle = "#F0EE0E";
-        ctx.fillRect(0, 0, 3, 18);
-
-        // le pantelon jambe gauche
+        ctx.fillRect(0, 0, 1.8, 10.8);
         ctx.fillStyle = "#914D03";
-        ctx.fillRect(-3, 0, 9, 6);
-
-        // la chaussette gauche
+        ctx.fillRect(-1.8, 0, 5.4, 3.6);
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 11.4, 3, 7.2);
-
-        // la chaussure gauche
+        ctx.fillRect(0, 6.84, 1.8, 4.32);
         ctx.fillStyle = "black";
-        ctx.fillRect(-9, 18, 13.2, 6.6);
-
+        ctx.fillRect(-5.4, 10.8, 7.92, 3.96);
         ctx.restore();
     }
 
     // Méthode pour dessiner la jambe droite
     drawJambeDroite(ctx) {
         ctx.save();
-
-        ctx.translate(36, 66);
-
-        // la jambe droite
+        ctx.translate(21.6, 39.6);
         ctx.fillStyle = "#F0EE0E";
-        ctx.fillRect(3, 4.2, 3, 18);
-
-        // le pantelon jambe droite
+        ctx.fillRect(1.8, 2.52, 1.8, 10.8);
         ctx.fillStyle = "#914D03";
-        ctx.fillRect(0.6, 3.6, 9, 6);
-
-        // la chaussette jambe droite
+        ctx.fillRect(0.36, 2.16, 5.4, 3.6);
         ctx.fillStyle = "white";
-        ctx.fillRect(3, 15.6, 3, 7.2);
-
-        // la chaussure droite
+        ctx.fillRect(1.8, 9.36, 1.8, 4.32);
         ctx.fillStyle = "black";
-        ctx.fillRect(0.9, 22.2, 13.2, 6.6);
-
+        ctx.fillRect(0.54, 12.96, 7.92, 3.96);
         ctx.restore();
     }
 
     drawEyes(ctx) {
-        drawCircleImmediat(ctx, 19.2, 19.2, 10.8, "white");
-        drawCircleImmediat(ctx, 40.8, 19.2, 10.8, "white");
+        drawCircleImmediat(ctx, 11.52, 11.52, 6.48, "white");
+        drawCircleImmediat(ctx, 24.48, 11.52, 6.48, "white");
         // Contours des yeux
         ctx.strokeStyle = "black";
-        ctx.lineWidth = 0.5;
+        ctx.lineWidth = 0.3;
         ctx.beginPath();
-        ctx.arc(19.2, 19.2, 10.8, 0, 2 * Math.PI, false);
+        ctx.arc(11.52, 11.52, 6.48, 0, 2 * Math.PI, false);
         ctx.stroke();
         ctx.beginPath();
-        ctx.arc(40.8, 19.2, 10.8, 0, 2 * Math.PI, false);
+        ctx.arc(24.48, 11.52, 6.48, 0, 2 * Math.PI, false);
         ctx.stroke();
 
         // pupille
-        drawCircleImmediat(ctx, 19.2, 19.2, 4.8, "skyblue");
-        drawCircleImmediat(ctx, 40.8, 19.2, 4.8, "skyblue");
+        drawCircleImmediat(ctx, 11.52, 11.52, 2.88, "skyblue");
+        drawCircleImmediat(ctx, 24.48, 11.52, 2.88, "skyblue");
         //iris
-        drawCircleImmediat(ctx, 19.2, 19.2, 3, "black");
-        drawCircleImmediat(ctx, 40.8, 19.2, 3, "black");
+        drawCircleImmediat(ctx, 11.52, 11.52, 1.8, "black");
+        drawCircleImmediat(ctx, 24.48, 11.52, 1.8, "black");
 
         // Cils pour l'œil gauche
         ctx.beginPath();
-        ctx.moveTo(12, 4.8);
-        ctx.lineTo(14.4, 9);
-        ctx.moveTo(19.2, 4.2);
-        ctx.lineTo(19.2, 9);
-        ctx.moveTo(26.4, 4.8);
-        ctx.lineTo(24, 9);
+        ctx.moveTo(7.2, 2.88);
+        ctx.lineTo(8.64, 5.4);
+        ctx.moveTo(11.52, 2.52);
+        ctx.lineTo(11.52, 5.4);
+        ctx.moveTo(15.84, 2.88);
+        ctx.lineTo(14.4, 5.4);
         ctx.stroke();
 
         // Cils pour l'œil droit
         ctx.beginPath();
-        ctx.moveTo(33.6, 4.8);
-        ctx.lineTo(36, 9);
-        ctx.moveTo(40.8, 4.2);
-        ctx.lineTo(40.8, 9);
-        ctx.moveTo(48, 4.8);
-        ctx.lineTo(45.6, 9);
+        ctx.moveTo(20.16, 2.88);
+        ctx.lineTo(21.6, 5.4);
+        ctx.moveTo(24.48, 2.52);
+        ctx.lineTo(24.48, 5.4);
+        ctx.moveTo(28.8, 2.88);
+        ctx.lineTo(27.36, 5.4);
         ctx.stroke();
     }
 
     drawNose(ctx) {
         ctx.save();
 
-        ctx.translate(30, 27);
+        ctx.translate(18, 16.2);
 
         // on dessine le nez
         ctx.fillStyle = "#F0EE0E";
         ctx.strokeStyle = "black";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 0.6;
 
         // Dessiner le cercle plein
         ctx.beginPath();
-        ctx.arc(0, 0, 4.2, 0, 2 * Math.PI, false);
+        ctx.arc(0, 0, 2.52, 0, 2 * Math.PI, false);
         ctx.fill();
 
         // Dessiner le contour 
         ctx.beginPath();
-        ctx.arc(0, 0, 4.2, 0, 0.5 * Math.PI, true); 
+        ctx.arc(0, 0, 2.52, 0, 0.5 * Math.PI, true); 
         ctx.stroke();
 
         ctx.restore();
@@ -230,46 +197,46 @@ export default class Player extends ObjectGraphique {
     drawSmile(ctx) {
         // Dessiner les dents
         ctx.fillStyle = "white";
-        ctx.fillRect(19.8, 38.4, 7.8, 6); // Première dent
-        ctx.fillRect(31.8, 38.4, 7.8, 6); // Deuxième dent
+        ctx.fillRect(11.88, 23.04, 4.68, 3.6); // Première dent
+        ctx.fillRect(19.08, 23.04, 4.68, 3.6); // Deuxième dent
 
         // Ajouter un contour noir aux dents 
         ctx.strokeStyle = "black";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 0.6;
 
         // Contour de la première dent
         ctx.beginPath();
-        ctx.moveTo(19.8, 37.2); 
-        ctx.lineTo(19.8, 45);
-        ctx.lineTo(27.6, 45);
-        ctx.lineTo(27.6, 38.4); 
+        ctx.moveTo(11.88, 22.32); 
+        ctx.lineTo(11.88, 27);
+        ctx.lineTo(16.56, 27);
+        ctx.lineTo(16.56, 23.04); 
         ctx.stroke();
 
         // Contour de la deuxième dent
         ctx.beginPath();
-        ctx.moveTo(31.8, 38.4);
-        ctx.lineTo(31.8, 45);
-        ctx.lineTo(39.6, 45);
-        ctx.lineTo(39.6, 37.8); 
+        ctx.moveTo(19.08, 23.04);
+        ctx.lineTo(19.08, 27);
+        ctx.lineTo(23.76, 27);
+        ctx.lineTo(23.76, 22.68); 
         ctx.stroke();
 
         // Dessiner le sourire
         ctx.beginPath();
-        ctx.arc(30, 15, 24, Math.PI * 0.2, Math.PI * 0.8, false); 
+        ctx.arc(18, 9, 14.4, Math.PI * 0.2, Math.PI * 0.8, false); 
         ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.2;
         ctx.stroke();
     }
 
     drawBrasGauche(ctx) {
         ctx.save();
 
-        ctx.translate(-6.9, 54);
+        ctx.translate(-4.14, 32.4);
         ctx.rotate(-1.5);
 
         // on dessine le bras gauche
         ctx.fillStyle = "#F0EE0E";
-        ctx.fillRect(-24, 1.2, 24, 3);
+        ctx.fillRect(-14.4, 0.72, 14.4, 1.8);
 
         // on dessine l'avant bras gauche
         this.drawAvantBrasGauche(ctx);
@@ -283,7 +250,7 @@ export default class Player extends ObjectGraphique {
         ctx.translate(0, 0);
 
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, 9, 6);
+        ctx.fillRect(0, 0, 5.4, 3.6);
 
         ctx.restore();
     }
@@ -291,12 +258,12 @@ export default class Player extends ObjectGraphique {
     drawBrasDroit(ctx) {
         ctx.save();
 
-        ctx.translate(66, 42);
+        ctx.translate(39.6, 25.2);
         ctx.rotate(1.5);
 
         // on dessine le bras droit
         ctx.fillStyle = "#F0EE0E";
-        ctx.fillRect(12, 1.2, 24, 3);
+        ctx.fillRect(7.2, 0.72, 14.4, 1.8);
 
         // on dessine l'avant bras droit
         this.drawAvantBrasDroit(ctx);
@@ -310,7 +277,7 @@ export default class Player extends ObjectGraphique {
         ctx.translate(0, 0);
 
         ctx.fillStyle = "white";
-        ctx.fillRect(3, 0, 9, 6);
+        ctx.fillRect(1.8, 0, 5.4, 3.6);
 
         ctx.restore();
     }

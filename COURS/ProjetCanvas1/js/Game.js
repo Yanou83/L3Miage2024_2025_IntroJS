@@ -64,7 +64,7 @@ export default class Game {
         await this.loadLevel(`niveau/niveau${this.niveau}.json`);
 
         // Recharger le joueur et l'objet souris
-        this.player = new Player(100, 100);
+        this.player = new Player(50, 50);
         this.objetsGraphiques.push(this.player);
 
         this.objetSouris = new ObjetSouris(200, 200, 25, 25, "transparent");
@@ -90,9 +90,9 @@ export default class Game {
 
         levelData.obstacles.forEach(obstacleData => {
             for (let i = 0; i < obstacleData.count; i++) {
-                let x = obstacleData.x + (obstacleData.orientation === 'horizontal' ? i * 40 : 0);
-                let y = obstacleData.y + (obstacleData.orientation === 'vertical' ? i * 40 : 0);
-                let obstacle = new Obstacle(x, y, 40, 40, coralImage);
+                let x = obstacleData.x + (obstacleData.orientation === 'horizontal' ? i * 20 : 0);
+                let y = obstacleData.y + (obstacleData.orientation === 'vertical' ? i * 20 : 0);
+                let obstacle = new Obstacle(x, y, 20, 20, coralImage);
                 this.objetsGraphiques.push(obstacle);
             }
         });
