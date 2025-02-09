@@ -89,6 +89,8 @@ export default class Game {
             this.animationRunning = true;
             this.start();
         }
+
+        this.updateCurrentLevelDisplay(); // Update the level display
     }
 
 
@@ -488,6 +490,7 @@ export default class Game {
         localStorage.setItem("currentLevel", this.niveau); // Enregistrer le niveau actuel
 
         this.resetGameComplet();
+        this.updateCurrentLevelDisplay(); // Update the level display
     }
 
     stopAnimation() {
@@ -497,5 +500,8 @@ export default class Game {
         }
     }
 
-
+    updateCurrentLevelDisplay() {
+        const currentLevelSpan = document.querySelector("#currentLevel");
+        currentLevelSpan.textContent = `Niveau actuel : ${this.niveau}`;
+    }
 }

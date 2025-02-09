@@ -2,7 +2,7 @@
     "obstacles": [
         { "x": 100, "y": 70, "count": 21, "orientation": "horizontal" },
         { "x": 400, "y": 105, "count": 1, "orientation": "vertical" },
-        { "x": 300, "y": 230, "count": 6, "orientation": "horizontal" },
+        { "x": 100, "y": 230, "count": 18, "orientation": "horizontal" },
         { "x": 100, "y": 120, "count": 10, "orientation": "vertical" },
         { "x": 900, "y": 115, "count": 8, "orientation": "vertical" },
         { "x": 300, "y": 180, "count": 9, "orientation": "vertical" },
