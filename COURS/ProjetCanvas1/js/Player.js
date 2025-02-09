@@ -1,5 +1,5 @@
 import ObjectGraphique from "./ObjectGraphique.js";
-import { drawCircleImmediat } from "./utils.js";
+import { drawCircleImmediat } from "./utils.js";   
 
 export default class Player extends ObjectGraphique {
     constructor(x, y) {
@@ -7,11 +7,6 @@ export default class Player extends ObjectGraphique {
         this.vitesseX = 0;
         this.vitesseY = 0;
         this.angle = 0;
-        this.scaleFactor = 0.7;
-
-        // Adapter la hitbox à la nouvelle taille
-        this.w *= 0.75;
-        this.h *= 0.75;
     }
 
     draw(ctx) {
@@ -23,7 +18,6 @@ export default class Player extends ObjectGraphique {
         // dans cette fonction seront par rapport à ce repère
         // translaté
         ctx.translate(this.x, this.y);
-        ctx.scale(this.scaleFactor, this.scaleFactor);
         ctx.rotate(this.angle);
         // on recentre le monstre. Par défaut le centre de rotation est dans le coin en haut à gauche
         // du rectangle, on décale de la demi largeur et de la demi hauteur pour 

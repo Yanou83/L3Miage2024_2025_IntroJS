@@ -1,18 +1,18 @@
 {
     "obstacles": [
-        { "x": 100, "y": 0, "count": 8, "orientation": "vertical" },
-        { "x": 365, "y": 62, "count": 8, "orientation": "vertical" },
-        { "x": 5, "y": 215, "count": 33, "orientation": "horizontal" },
-        { "x": 84, "y": 290, "count": 29, "orientation": "horizontal" },
-        { "x": 645, "y": 0, "count": 8, "orientation": "vertical" },
-        { "x": 84, "y": 305, "count": 4, "orientation": "vertical" },
-        { "x": 95, "y": 365, "count": 35, "orientation": "horizontal" }
+        { "x": 100, "y": 0, "count": 4, "orientation": "vertical" },
+        { "x": 360, "y": 80, "count": 5, "orientation": "vertical" },
+        { "x": 0, "y": 200, "count": 23, "orientation": "horizontal" },
+        { "x": 90, "y": 285, "count": 20, "orientation": "horizontal" },
+        { "x": 645, "y": 0, "count": 4, "orientation": "vertical" },
+        { "x": 90, "y": 285, "count": 3, "orientation": "vertical" },
+        { "x": 90, "y": 370, "count": 24, "orientation": "horizontal" }
 
 
     ],
     "objectif": {
         "x": 750,
-        "y": 425,
+        "y": 430,
         "w": 35,
         "h": 35,
         "color": "gold"

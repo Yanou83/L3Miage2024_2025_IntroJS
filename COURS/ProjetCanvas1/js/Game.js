@@ -70,7 +70,11 @@ export default class Game {
         await this.loadLevel(`niveau/niveau${this.niveau}.json`);
 
         // Recharger le joueur et l'objet souris
-        this.player = new Player(50, 50);
+        if (this.niveau === 3) {
+            this.player = new Player(170, 150); // New spawn location for level 3
+        } else {
+            this.player = new Player(50, 50); // Default spawn location
+        }
         this.player.vitesseX = 0;
         this.player.vitesseY = 0;
         this.objetsGraphiques.push(this.player);
@@ -124,9 +128,9 @@ export default class Game {
 
         levelData.obstacles.forEach(obstacleData => {
             for (let i = 0; i < obstacleData.count; i++) {
-                let x = obstacleData.x + (obstacleData.orientation === 'horizontal' ? i * 20 : 0);
-                let y = obstacleData.y + (obstacleData.orientation === 'vertical' ? i * 20 : 0);
-                let obstacle = new Obstacle(x, y, 20, 20, coralImage);
+                let x = obstacleData.x + (obstacleData.orientation === 'horizontal' ? i * 30 : 0);
+                let y = obstacleData.y + (obstacleData.orientation === 'vertical' ? i * 30 : 0);
+                let obstacle = new Obstacle(x, y, 30, 30, coralImage);
                 this.objetsGraphiques.push(obstacle);
             }
         });
@@ -502,6 +506,6 @@ export default class Game {
 
     updateCurrentLevelDisplay() {
         const currentLevelSpan = document.querySelector("#currentLevel");
-        currentLevelSpan.textContent = `Niveau actuel : ${this.niveau}`;
+        currentLevelSpan.textContent = `Niveau : ${this.niveau}`;
     }
 }

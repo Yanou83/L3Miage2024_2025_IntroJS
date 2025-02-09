@@ -1,34 +1,30 @@
 {
     "obstacles": [
-        { "x": 100, "y": 70, "count": 21, "orientation": "horizontal" },
+        { "x": 135, "y": 55, "count": 21, "orientation": "horizontal" },
         { "x": 100, "y": 200, "count": 20, "orientation": "horizontal" },
         { "x": 100, "y": 200, "count": 8, "orientation": "vertical" },
-        { "x": 300, "y": 200, "count": 8, "orientation": "vertical" },
-        { "x": 200, "y": 320, "count": 8, "orientation": "vertical" },
-        { "x": 0, "y": 630, "count": 9, "orientation": "horizontal" },
-        { "x": 520, "y": 400, "count": 8, "orientation": "horizontal" },
-        { "x": 800, "y": 430, "count": 2, "orientation": "vertical" },
-        { "x": 840, "y": 470, "count": 2, "orientation": "horizontal" },
-        { "x": 920, "y": 430, "count": 2, "orientation": "vertical" },
-        { "x": 520, "y": 430, "count": 5, "orientation": "vertical" },
-        { "x": 520, "y": 520, "count": 12, "orientation": "horizontal" },
-        { "x": 300, "y": 520, "count": 4, "orientation": "horizontal" },
-        { "x": 420, "y": 562, "count": 2, "orientation": "vertical" },
-        { "x": 920, "y": 400, "count": 2, "orientation": "horizontal" }
+        { "x": 280, "y": 200, "count": 8, "orientation": "vertical" },
+        { "x": 410, "y": 330, "count": 7, "orientation": "horizontal" },
+        { "x": 620, "y": 330, "count": 2, "orientation": "vertical" },
+        { "x": 710, "y": 330, "count": 2, "orientation": "vertical" },
+        { "x": 710, "y": 330, "count": 3, "orientation": "horizontal" },
+        { "x": 650, "y": 360, "count": 2, "orientation": "horizontal" },
+        { "x": 410, "y": 330, "count": 3, "orientation": "vertical" },
+        { "x": 370, "y": 170, "count": 1, "orientation": "vertical" },
+        { "x": 190, "y": 283.5, "count": 7, "orientation": "vertical" }
         
     ],
     "objectif": {
-        "x": 920,
-        "y": 600,
-        "w": 50,
-        "h": 50,
+        "x": 740,
+        "y": 420,
+        "w": 40,
+        "h": 40,
         "color": "gold"
     },
     "ennemis": [
-        { "x": 200, "y": 150, "w": 40, "h": 40, "direction": "horizontal", "speed": 2 },
-        { "x": 400, "y": 300, "w": 40, "h": 40, "direction": "vertical", "speed": 3 },
-        { "x": 600, "y": 450, "w": 40, "h": 40, "direction": "horizontal", "speed": 1.5 },
-        { "x": 400, "y": 270, "w": 40, "h": 40, "direction": "horizontal", "speed": 3 },
-        { "x": 600, "y": 320, "w": 40, "h": 40, "direction": "horizontal", "speed": 2 }
+        { "x": 400, "y": 150, "w": 40, "h": 40, "direction": "horizontal", "speed": 6 },
+        { "x": 310, "y": 300, "w": 40, "h": 40, "direction": "vertical", "speed": 3 },
+        { "x": 600, "y": 450, "w": 40, "h": 40, "direction": "horizontal", "speed": 2.5 },
+        { "x": 400, "y": 250, "w": 40, "h": 40, "direction": "horizontal", "speed": 3 }
     ]
 }
