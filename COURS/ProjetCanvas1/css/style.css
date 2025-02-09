@@ -67,3 +67,12 @@ body {
     font-size: 16px;
 }
 
+.current-level-container {
+    background-color: blue;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+}
+
